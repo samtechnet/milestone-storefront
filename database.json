@@ -1,0 +1,18 @@
+{
+    "dev": {
+      "driver": "pg",
+      "host": "127.0.0.1",
+      "database": "full_stack_dev",
+      "user": "samtech",
+      "password": "2010.sam"
+    },
+    "test": {
+      "driver": "pg",
+      "host": "127.0.0.1",
+      "database": "full_stack_dev_test",
+      "user": "samtech",
+      "password": "2010.sam"
+    }
+   
+  }
+ 

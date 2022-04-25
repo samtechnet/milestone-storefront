@@ -1,0 +1,1 @@
+DROP TABLE full_stack_dev;
