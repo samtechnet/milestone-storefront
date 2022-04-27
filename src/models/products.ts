@@ -23,7 +23,7 @@ export class productTable {
     async create(product: Product) {
         try {
             const conn = await client.connect();
-            const sql = "INSERT INTO productTables(name, price) VALUES ($1, $2) RETURNING *";
+            const sql = "INSERT INTO products(name, price) VALUES ($1, $2) RETURNING *";
             const values = [product.name, product.price];
             const res = await client.query(sql, values);
             conn.release();
@@ -35,7 +35,7 @@ export class productTable {
     };
     async show(id: string): Promise<Product> {
         try {
-            const sql = 'SELECT * FROM productTables WHERE id=($1)';
+            const sql = 'SELECT * FROM products WHERE id=($1)';
             const conn = await client.connect();
             const result = await conn.query(sql, [id]);
             conn.release();
@@ -46,7 +46,7 @@ export class productTable {
     }
     async delete(id: string): Promise<Product>{
         try {
-            const sql = 'DELETE FROM productTables WHERE id= ($1) RETURNING *';
+            const sql = 'DELETE FROM products WHERE id= ($1) RETURNING *';
             const conn = await client.connect();
             const result = await conn.query(sql, [id]);
             conn.release()

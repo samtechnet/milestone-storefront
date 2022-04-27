@@ -23,7 +23,7 @@ if (ENV === "test") {
     password: POSTGRES_PASSWORD,
   });
 } else {
-  console.log("I am in dev mode");
+  //console.log("I am in dev mode");
   client = new Pool({
     host: POSTGRES_HOST,
     database: POSTGRES_DB,

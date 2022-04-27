@@ -19,7 +19,7 @@ if (ENV === "test") {
     });
 }
 else {
-    console.log("I am in dev mode");
+    //console.log("I am in dev mode");
     client = new pg_1.Pool({
         host: POSTGRES_HOST,
         database: POSTGRES_DB,

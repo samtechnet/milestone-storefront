@@ -39,12 +39,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.productTable = void 0;
+exports.UserTable = void 0;
+var bcrypt_1 = __importDefault(require("bcrypt"));
 var database_1 = __importDefault(require("../database"));
-var productTable = /** @class */ (function () {
-    function productTable() {
+// let pepper: string;
+// let salt: number
+// const { SALT_ROUNDS, BCRYPT_PASSWORD } = process.env;
+// if (SALT_ROUNDS && BCRYPT_PASSWORD) {
+//     salt = Number (SALT_ROUNDS);
+//     pepper = BCRYPT_PASSWORD
+// }= process.env
+var saltRounds = Number(process.env.SALT_ROUNDS);
+var pepper = String(process.env.BCRYPT_PASSWORD);
+var UserTable = /** @class */ (function () {
+    function UserTable() {
     }
-    productTable.prototype.index = function () {
+    UserTable.prototype.index = function () {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, res, error_1;
             return __generator(this, function (_a) {
@@ -54,7 +64,7 @@ var productTable = /** @class */ (function () {
                         return [4 /*yield*/, database_1["default"].connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = "SELECT * FROM products";
+                        sql = "SELECT * FROM Users";
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         res = _a.sent();
@@ -62,46 +72,57 @@ var productTable = /** @class */ (function () {
                         return [2 /*return*/, res.rows];
                     case 3:
                         error_1 = _a.sent();
-                        throw new Error("unable to fetch products from database ".concat(error_1));
+                        throw new Error("unable to fetch user from database ".concat(error_1));
                     case 4: return [2 /*return*/];
                 }
             });
         });
     };
-    productTable.prototype.create = function (product) {
+    UserTable.prototype.create = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, values, res, error_2;
+            var loginDetails, conn, sql, hash, result, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _a.trys.push([0, 4, , 5]);
+                        loginDetails = {
+                            firstName: user.first_name,
+                            lastName: user.last_name,
+                            password: user.password
+                        };
                         return [4 /*yield*/, database_1["default"].connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = "INSERT INTO products(name, price) VALUES ($1, $2) RETURNING *";
-                        values = [product.name, product.price];
-                        return [4 /*yield*/, database_1["default"].query(sql, values)];
+                        sql = "INSERT INTO users (first_name,last_name, password) VALUES ($1, $2, $3) RETURNING *";
+                        return [4 /*yield*/, bcrypt_1["default"].hash(loginDetails.password + pepper, saltRounds)];
                     case 2:
-                        res = _a.sent();
-                        conn.release();
-                        return [2 /*return*/, res.rows[0]];
+                        hash = _a.sent();
+                        return [4 /*yield*/, conn.query(sql, [
+                                loginDetails.firstName,
+                                loginDetails.lastName,
+                                hash,
+                            ])];
                     case 3:
+                        result = _a.sent();
+                        console.log(result);
+                        conn.release();
+                        return [2 /*return*/, result.rows[0]];
+                    case 4:
                         error_2 = _a.sent();
-                        throw new Error("could not create product ".concat((product.name, product.price), ". Error: ").concat(error_2));
-                    case 4: return [2 /*return*/];
+                        throw new Error("unable to create user ".concat((user.first_name, user.last_name), ". Error: ").concat(error_2));
+                    case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    ;
-    productTable.prototype.show = function (id) {
+    UserTable.prototype.show = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             var sql, conn, result, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        sql = 'SELECT * FROM products WHERE id=($1)';
+                        sql = "SELECT * FROM users WHERE id=".concat(id);
                         return [4 /*yield*/, database_1["default"].connect()];
                     case 1:
                         conn = _a.sent();
@@ -112,61 +133,45 @@ var productTable = /** @class */ (function () {
                         return [2 /*return*/, result.rows[0]];
                     case 3:
                         error_3 = _a.sent();
-                        throw new Error("Could not find product with id ".concat(id, ". Error: ").concat(error_3));
+                        throw new Error("Could not find user with id ".concat(id, ". Error: ").concat(error_3));
                     case 4: return [2 /*return*/];
                 }
             });
         });
     };
-    productTable.prototype["delete"] = function (id) {
+    UserTable.prototype.authenticate = function (first_name, password) {
         return __awaiter(this, void 0, void 0, function () {
-            var sql, conn, result, error_4;
+            var conn, sql, result, user, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        sql = 'DELETE FROM products WHERE id= ($1) RETURNING *';
+                        _a.trys.push([0, 5, , 6]);
                         return [4 /*yield*/, database_1["default"].connect()];
                     case 1:
                         conn = _a.sent();
-                        return [4 /*yield*/, conn.query(sql, [id])];
+                        sql = 'SELECT * FROM users WHERE first_name = $1';
+                        return [4 /*yield*/, conn.query(sql, [first_name])];
                     case 2:
                         result = _a.sent();
-                        conn.release();
-                        return [2 /*return*/, result.rows[0]];
+                        if (!result.rows.length) return [3 /*break*/, 4];
+                        user = result.rows[0];
+                        return [4 /*yield*/, bcrypt_1["default"].compare(password + pepper, user.password)];
                     case 3:
+                        if (_a.sent()) {
+                            return [2 /*return*/, user.password];
+                        }
+                        _a.label = 4;
+                    case 4:
+                        conn.release();
+                        return [2 /*return*/, null];
+                    case 5:
                         error_4 = _a.sent();
-                        throw new Error("Could not delete product with id  ".concat(id, ". Error: ").concat(error_4));
-                    case 4: return [2 /*return*/];
+                        throw new Error("Cannot authenticate user ".concat(error_4));
+                    case 6: return [2 /*return*/];
                 }
             });
         });
     };
-    productTable.prototype.category = function (cat) {
-        return __awaiter(this, void 0, void 0, function () {
-            var sql, conn, result, error_5;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        sql = "SELECT * FROM products WHERE category = '".concat(cat, "'");
-                        return [4 /*yield*/, database_1["default"].connect()];
-                    case 1:
-                        conn = _a.sent();
-                        return [4 /*yield*/, conn.query(sql)];
-                    case 2:
-                        result = _a.sent();
-                        conn.release();
-                        return [2 /*return*/, result.rows[0]];
-                    case 3:
-                        error_5 = _a.sent();
-                        throw new Error("".concat(cat, " does not exist: Error").concat(error_5));
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    return productTable;
+    return UserTable;
 }());
-exports.productTable = productTable;
-;
+exports.UserTable = UserTable;

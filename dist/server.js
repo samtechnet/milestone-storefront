@@ -44,12 +44,15 @@ var body_parser_1 = __importDefault(require("body-parser"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var book_1 = __importDefault(require("./handlers/book"));
 var products_1 = __importDefault(require("./handlers/products"));
+var user_1 = __importDefault(require("./handlers/user"));
 dotenv_1["default"].config();
 var app = (0, express_1["default"])();
-var address = "0.0.0.0:3001";
+// const address: string = "0.0.0.0:8080";
+var PORT = 3002;
 app.use(body_parser_1["default"].json());
 (0, book_1["default"])(app);
 (0, products_1["default"])(app);
+(0, user_1["default"])(app);
 app.get("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -58,7 +61,6 @@ app.get("/", function (req, res) {
         });
     });
 });
-console.log(process.env.POSTGRES_USER);
-app.listen(3001, function () {
-    console.log("starting app on: ".concat(address));
+app.listen(PORT, function () {
+    console.log("started app on port: ".concat(PORT));
 });
