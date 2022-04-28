@@ -62,7 +62,7 @@ export class UserTable {
   }
   async show(id: string): Promise<User> {
     try {
-      const sql = 'SELECT * FROM Users WHERE id=($1)';
+      const sql = "SELECT * FROM Users WHERE id=($1)";
       const conn = await client.connect();
       const result = await conn.query(sql, [id]);
       conn.release();
