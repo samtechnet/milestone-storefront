@@ -40,18 +40,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var verifyAuthToken_1 = __importDefault(require("./Auth/verifyAuthToken"));
 var user_1 = require("../models/user");
 var userstable = new user_1.UserTable();
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var product, error_1;
+    var users, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, userstable.index()];
             case 1:
-                product = _a.sent();
-                res.json(product);
+                users = _a.sent();
+                res.json(users);
                 return [3 /*break*/, 3];
             case 2:
                 error_1 = _a.sent();
@@ -138,8 +139,8 @@ var authenticate = function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 var user_routes = function (app) {
-    app.get("/users", index);
-    app.get("/user/:id", show);
+    app.get("/users", verifyAuthToken_1["default"], index);
+    app.get("/user/:id", verifyAuthToken_1["default"], show);
     app.post("/user", create);
     app.post("/login", authenticate);
     // app.put("/books/:id", update);

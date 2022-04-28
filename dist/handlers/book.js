@@ -35,8 +35,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 var book_1 = require("../models/book");
+var verifyAuthToken_1 = __importDefault(require("./Auth/verifyAuthToken"));
 var table = new book_1.BookTable();
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var books, error_1;
@@ -146,10 +150,10 @@ var destroy = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     });
 }); };
 var book_routes = function (app) {
-    app.get("/books", index);
-    app.get("/books/:id", show);
-    app.post("/books", create);
-    app.put("/books/:id", update);
-    app["delete"]("/books/:id", destroy);
+    app.get("/books", verifyAuthToken_1["default"], index);
+    app.get("/books/:id", verifyAuthToken_1["default"], show);
+    app.post("/books", verifyAuthToken_1["default"], create);
+    app.put("/books/:id", verifyAuthToken_1["default"], update);
+    app["delete"]("/books/:id", verifyAuthToken_1["default"], destroy);
 };
 exports["default"] = book_routes;

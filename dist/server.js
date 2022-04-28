@@ -48,7 +48,7 @@ var user_1 = __importDefault(require("./handlers/user"));
 dotenv_1["default"].config();
 var app = (0, express_1["default"])();
 // const address: string = "0.0.0.0:8080";
-var PORT = 3002;
+var PORT = 3003;
 app.use(body_parser_1["default"].json());
 (0, book_1["default"])(app);
 (0, products_1["default"])(app);

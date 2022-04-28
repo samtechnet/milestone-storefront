@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { Book, BookTable } from "../models/book";
+import verifyAuthToken from "./Auth/verifyAuthToken";
 
 const table = new BookTable();
 const index = async (req: Request, res: Response) => {
@@ -59,11 +60,11 @@ const destroy = async (req: Request, res: Response) => {
  }
 
 const book_routes = (app: express.Application) => {
-    app.get("/books", index);
-    app.get("/books/:id", show);
-    app.post("/books", create);
-    app.put("/books/:id", update);
-    app.delete("/books/:id", destroy);
+    app.get("/books", verifyAuthToken,index);
+    app.get("/books/:id",verifyAuthToken, show);
+    app.post("/books",verifyAuthToken, create);
+    app.put("/books/:id",verifyAuthToken, update);
+    app.delete("/books/:id", verifyAuthToken, destroy);
 }
 
 export default book_routes;

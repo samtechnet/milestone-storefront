@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { Product, productTable } from "../models/products";
+import verifyAuthToken from "./Auth/verifyAuthToken";
 
 const productsTable = new productTable();
 const index = async (req: Request, res: Response) => {
@@ -57,11 +58,11 @@ const destroy = async (req: Request, res: Response) => {
  }
 
 const product_routes = (app: express.Application) => {
-    app.get("/products", index);
-    app.get("/products/:id", show);
-    app.post("/products", create);
-    app.get("/produst", category);
-    app.delete("/books/:id", destroy);
+    app.get("/products",verifyAuthToken, index);
+    app.get("/products/:id",verifyAuthToken, show);
+    app.post("/products",verifyAuthToken, create);
+    app.get("/produst", verifyAuthToken,category);
+    app.delete("/books/:id",verifyAuthToken, destroy);
 }
 
 export default product_routes;

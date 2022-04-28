@@ -50,7 +50,6 @@ export class UserTable {
         loginDetails.lastName,
         hash,
       ]);
-        console.log(result)
       conn.release();
       return result.rows[0];
     } catch (error) {
@@ -63,7 +62,7 @@ export class UserTable {
   }
   async show(id: string): Promise<User> {
     try {
-      const sql = `SELECT * FROM users WHERE id=${id}`;
+      const sql = 'SELECT * FROM Users WHERE id=($1)';
       const conn = await client.connect();
       const result = await conn.query(sql, [id]);
       conn.release();
@@ -71,25 +70,27 @@ export class UserTable {
     } catch (error) {
       throw new Error(`Could not find user with id ${id}. Error: ${error}`);
     }
-    }
-    async authenticate(first_name: string,password: string): Promise<User|null> {
-        try {
-            const conn = await client.connect();
-        const sql = 'SELECT * FROM users WHERE first_name = $1';
-        const result = await conn.query(sql, [first_name]);
-            if (result.rows.length) {
-                const user = result.rows[0];
-                if (await bcrypt.compare(password + pepper, user.password)) {
-                    return user.password;
-                    
-                }
-            }
-        conn.release();
-            return null;
-        } catch (error) {
-            throw new Error (`Cannot authenticate user ${error}`)
+  }
+  async authenticate(
+    first_name: string,
+    password: string
+  ): Promise<User | null> {
+    try {
+      const conn = await client.connect();
+      const sql = "SELECT * FROM users WHERE first_name = $1";
+      const result = await conn.query(sql, [first_name]);
+      if (result.rows.length) {
+        const user = result.rows[0];
+        if (await bcrypt.compare(password + pepper, user.password)) {
+          return user.password;
         }
+      }
+      conn.release();
+      return null;
+    } catch (error) {
+      throw new Error(`Cannot authenticate user ${error}`);
     }
+  }
   // async delete(id: string): Promise<User>{
   //     try {
   //         const sql = 'DELETE FROM productTables WHERE id= ($1) RETURNING *';

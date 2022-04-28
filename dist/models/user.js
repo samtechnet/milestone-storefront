@@ -104,7 +104,6 @@ var UserTable = /** @class */ (function () {
                             ])];
                     case 3:
                         result = _a.sent();
-                        console.log(result);
                         conn.release();
                         return [2 /*return*/, result.rows[0]];
                     case 4:
@@ -122,7 +121,7 @@ var UserTable = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        sql = "SELECT * FROM users WHERE id=".concat(id);
+                        sql = 'SELECT * FROM Users WHERE id=($1)';
                         return [4 /*yield*/, database_1["default"].connect()];
                     case 1:
                         conn = _a.sent();
@@ -149,7 +148,7 @@ var UserTable = /** @class */ (function () {
                         return [4 /*yield*/, database_1["default"].connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = 'SELECT * FROM users WHERE first_name = $1';
+                        sql = "SELECT * FROM users WHERE first_name = $1";
                         return [4 /*yield*/, conn.query(sql, [first_name])];
                     case 2:
                         result = _a.sent();

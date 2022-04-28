@@ -10,7 +10,7 @@ dotenv.config();
 
 const app: express.Application = express();
 // const address: string = "0.0.0.0:8080";
-const PORT = 3002
+const PORT = 3003
 
 app.use(bodyParser.json());
 
